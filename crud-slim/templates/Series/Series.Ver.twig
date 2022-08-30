@@ -1,0 +1,449 @@
+{% extends 'Series/Series.twig' %}
+	
+{% block styles %}
+
+
+	{% if reproducir is null %}
+	  	
+	  	<link type="text/css" rel="stylesheet" href="{{base_url()}}/assets/dist/css/error_archivo_no_cargado/style.css" />
+
+	{% else %}
+
+	  	<link href="{{base_url()}}/assets/dist/node_modules/video.js/dist/video-js.css" rel="stylesheet" />
+
+		<!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+		<script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+
+	 {% endif %}
+
+	<style type="text/css">
+			.sombra:hover{
+				background: #ababab33;
+				cursor: pointer;
+			}
+
+			.play{
+				background: #d8d8d8;
+			}
+
+			.play .card-body{
+				padding: 0.3rem;
+			}
+
+			.sombra{
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+			}
+
+			.myicon{
+				width: 100%;
+			    color: #d8d8d8;
+			    font-size: 75px;
+			    display: none;
+			    justify-content: center;
+			    align-items: center;
+			    height: 100%;
+			}
+
+			.card:hover .myicon{
+			    display: flex;
+			}
+
+			.card:active .myicon{
+			    font-size: 60px;
+			}
+
+			.img-container{
+				position: relative;
+			}
+
+			.icon-container{
+				height: 100%;
+				width: 100%;
+				position: absolute;
+				top: 0;
+			}
+
+
+			.MultiCarousel { float: left; overflow: hidden; padding: 15px; width: 100%; position:relative; }
+		    	.MultiCarousel .MultiCarousel-inner { transition: 1s ease all; float: left; }
+		        .MultiCarousel .MultiCarousel-inner .item { float: left;}
+		        .MultiCarousel .MultiCarousel-inner .item > div { text-align: center; padding:10px; margin:10px; background:#f1f1f1; color:#666;}
+			    .MultiCarousel .leftLst, .MultiCarousel .rightLst { position:absolute; border-radius:50%;top:calc(50% - 20px); }
+			    .MultiCarousel .leftLst { left:0; }
+			    .MultiCarousel .rightLst { right:0; }
+	    
+	        	.MultiCarousel .leftLst.over, .MultiCarousel .rightLst.over { pointer-events: none; background:#ccc; }
+
+	                    
+	          .hidden{
+	            display: none;
+	          }
+
+	          
+	</style>
+
+{% endblock %}
+
+{% block reproductor %}
+
+	{% if reproducir is not null %}
+
+	      <video
+	        id="my-video"
+	        class="video-js"
+	        controls
+	        preload="auto"
+	        data-setup="{}"
+	        name="media" 
+	        data-id='{{cap.id}}'
+	      >
+	        <source src="{{base_url()}}/assets/g/series/{{cap.url}}" type="video/mp4" />
+	        <source src="{{base_url()}}/assets/g/series/{{cap.url}}" type="video/webm" />
+	        <p class="vjs-no-js">
+	          To view this video please enable JavaScript, and consider upgrading to a
+	          web browser that
+	          <a href="https://videojs.com/html5-video-support/" target="_blank"
+	            >supports HTML5 video</a
+	          >
+	        </p>
+	      </video>
+	      
+	    
+
+    {% else %}
+  		
+	    <div id="error_archivo_no_cargado" style="height: 500px; margin-bottom: 20px;">
+	      {% include 'error_archivo_no_cargado.twig' with {'titulo': 'SERIES'}%}
+	    </div>
+    {% endif %}
+    <div style="color: #fff;">
+	    <h1>{{ data.titulo }}</h1> <h4>{{cap.nombre}}</h4><br>
+	</div>
+{% endblock %}
+
+{% block Contenido %}
+
+	{% if data is not null %}
+		<div class="container">	
+			<select class="form-control font-weight-bold" id="select_tem">
+	            
+			{% for i in 1..data.temporadas  %}
+	            <option {% if cap.temporada == i %}selected{% endif %}>Temporada {{i}}</option>
+	        {% endfor %}
+        	</select>
+		</div>
+		
+		{% if data.capitulos[0] is not null %}
+		<div class="MultiCarousel" data-items="1,3,5,6" data-slide="4" id="MultiCarousel"  data-interval="1000">
+            <div class="MultiCarousel-inner" style=" width: max-content">
+                
+                {% for item in data.capitulos %}
+
+                	<div class="item hidden" data-temporada='{{item.temporada}}'>
+					 <div class="" {% if item.id == cap.id %} id="play" {% endif %}>
+					    <div class="card play">
+					      <div class="img-container">
+				          	<img class="card-img-top" src="{{base_url()}}/assets/imagenes/{{item.img}}" alt="">
+				          	<div class="icon-container">
+				          		<span class="material-icons myicon">play_circle_outline</span>
+				          	</div>
+				          </div>
+					      <div class="card-body">
+					        <h6 class="card-title font-weight-bold">
+					          {% if item.id == cap.id %}<< {{item.nombre}} >>{% else %}{{item.nombre}}{% endif %}
+					        </h6>
+					      </div>
+						  	<a href="{{path_for('series.ver',{'id' : item.id, 'id_serie': item.id_serie})}}">
+					      	 <div class="sombra"></div>
+						   </a>
+					    </div>
+					 </div>
+					</div>
+
+				 {% endfor %}
+
+                </div>
+            <button class="btn btn-primary leftLst" ><</button>
+            <button class="btn btn-primary rightLst" >></button>
+        </div>
+        {% else %}
+        <div class="container">	
+        	<h4 style="color: #fff; margin-top: 5px;">No hay Capitulos Disponibles</h4>
+        </div>
+        {% endif %}
+    {% endif %}
+
+{% endblock %}
+
+{% block script %}
+
+	{% if data is not null %}
+
+		<script type="text/javascript">
+
+
+			$(document).ready(function () {
+				
+				playing = $('#play');
+				playing.find('.sombra').remove();
+			  	playing.find('.icon-container').remove();
+			  	itemview = {i: 0, v: 0};
+
+			    var itemsMainDiv = ('.MultiCarousel');
+			    var itemsDiv = ('.MultiCarousel-inner');
+			    var itemWidth = "";
+		      	mi = $('#select_tem');
+
+			    $('.leftLst, .rightLst').click(function () {
+			        var condition = $(this).hasClass("leftLst");
+			        if (condition)
+			            click(0, this);
+			        else
+			            click(1, this);
+			    });
+
+			  ResCarouselSize(); 
+
+		      mi[0].onchange = (function(){
+		      	//var temp =  $('.MultiCarousel-inner')[0];
+		      	//var itemClass2 = ('.hidden');
+				//var itemHidden = temp.find(itemClass2).length;
+
+		      	//temp.style.width = '10000px';
+		 		itemview.i = 0;
+		 		itemview.v = 0;
+		        items = $('.item');
+		        __this = this;
+		       
+		        items.each(function(){
+		          
+		          if (this.dataset.temporada == __this.selectedIndex+1) {
+		            this.className = 'item no-hidden';
+		            
+
+		            if (this.children[0].id == 'play') {
+		            	
+		            	itemview.v = itemview.i;	
+		            }
+
+		            itemview.i++;
+		          }else{
+		            this.className = 'item hidden';
+		            
+		          }
+		        });
+
+		        ResCarouselSize();
+
+		      });
+
+		      mi[0].onchange();
+		      
+		      
+
+			    $(window).resize(function () {
+			        ResCarouselSize();
+			    });
+
+			    //this function define the size of the items
+			    function ResCarouselSize() {
+
+			        var incno = 0;
+			        var dataSlide = ("data-slide");
+			        var dataItems = ("data-items");
+			        var itemClass = ('.item');
+			        var id = 0;
+			        var btnParentSb = '';
+			        var itemsSplit = '';
+			        var sampwidth = $(itemsMainDiv).width();
+			        var bodyWidth = $('body').width();
+			        $(itemsDiv).each(function () {
+			            id = id + 1;
+			            var itemNumbers = $(this).find(itemClass).length;
+			            btnParentSb = $(this).parent().attr(dataItems);
+			            itemslide = $(this).parent()[0];
+			            itemsSplit = btnParentSb.split(',');
+			            $(this).parent().attr("id", "MultiCarousel" + id);
+
+
+			            if (bodyWidth >= 1200) {
+			                incno = itemsSplit[3];
+			                itemWidth = sampwidth / incno;
+			            }
+			            else if (bodyWidth >= 992) {
+			                incno = itemsSplit[2];
+			                itemWidth = sampwidth / incno;
+			            }
+			            else if (bodyWidth >= 768) {
+			                incno = itemsSplit[1];
+			                itemWidth = sampwidth / incno;
+			            }
+			            else {
+			                incno = itemsSplit[0];
+			                itemWidth = sampwidth / incno;
+			            }
+			           
+			            var sumaitem = ((itemview.i-itemview.v)*itemWidth);
+			            
+			            if (itemview.v == 0) {
+
+			            	translate = itemview.v * itemWidth;
+			            	$(".rightLst").removeClass("over");
+			            	$(".leftLst").addClass("over");
+
+			            }
+			            else if(bodyWidth <= 768){
+
+			            	translate = itemview.v * itemWidth;
+			            	$(".rightLst").removeClass("over");
+			            	$(".leftLst").removeClass("over");
+
+			            }else if(itemview.v >= 1 && sampwidth <= sumaitem){
+
+			            	translate = itemWidth * (itemview.v - 1);
+			            	$(".rightLst").removeClass("over");
+			            	$(".leftLst").removeClass("over");
+
+			            }
+			            else{
+
+			            	translate = (itemview.i*itemWidth) - sampwidth;
+			            	$(".rightLst").addClass("over");
+			            	$(".leftLst").removeClass("over");
+			            
+			            }
+
+			            itemslide.dataset.slide = incno;
+			            $(this).css({ 'transform': 'translateX(-'+translate+'px)'});
+			            $(this).find(itemClass).each(function () {
+			                $(this).outerWidth(itemWidth);
+			                $(this).css({ 'margin-top': '10px'});
+			            });
+
+			            if (bodyWidth >= 768) {
+			            	if (playing.parent()[0] !== undefined) {
+					            playing.parent()[0].style.marginTop = '';
+								playing.parent().outerWidth(playing.parent().outerWidth() * 1.1);
+								//playing.style.margin-top =  '';
+			            	}
+			            }
+
+			        });
+			    }
+
+
+			    //this function used to move the items
+			    function ResCarousel(e, el, s) {
+			        var leftBtn = ('.leftLst');
+			        var rightBtn = ('.rightLst');
+			        var translateXval = '';
+			        var divStyle = $(el + ' ' + itemsDiv).css('transform');
+			        var values = divStyle.match(/-?[\d\.]+/g);
+			        var xds = Math.abs(values[4]);
+			        if (e == 0) {
+			            translateXval = parseInt(xds) - parseInt(itemWidth * s);
+			            $(el + ' ' + rightBtn).removeClass("over");
+
+			            if (translateXval <= itemWidth / 2) {
+			                translateXval = 0;
+			                $(el + ' ' + leftBtn).addClass("over");
+			            }
+			        }
+			        else if (e == 1) {
+			            var itemsCondition = $(el).find(itemsDiv).width() - $(el).width();
+			            translateXval = parseInt(xds) + parseInt(itemWidth * s);
+			            $(el + ' ' + leftBtn).removeClass("over");
+
+			            if (translateXval >= itemsCondition - itemWidth / 2) {
+			                translateXval = itemsCondition;
+			                $(el + ' ' + rightBtn).addClass("over");
+			            }
+			        }
+			        $(el + ' ' + itemsDiv).css('transform', 'translateX(' + -translateXval + 'px)');
+			    }
+
+			    //It is used to get some elements from btn
+			    function click(ell, ee) {
+			        var Parent = "#" + $(ee).parent().attr("id");
+			        var slide = $(Parent).attr("data-slide");
+			        ResCarousel(ell, Parent, slide);
+			    }
+
+			});
+		</script>
+
+	{% endif %}
+
+    {% if reproducir is null %}
+      <script type="text/javascript">
+    	error_archivo_no_cargado = document.getElementById('error_archivo_no_cargado');
+
+    	 $(window).resize(function () {
+
+	        width = $(error_archivo_no_cargado).width();
+	        height = (width/16)*8;
+
+	        if (height < 270) {
+	          $(error_archivo_no_cargado).height(270);
+	        }else{
+	          $(error_archivo_no_cargado).height(height);
+	        }
+	     });
+
+	     $(window).resize();
+	  </script>	
+    {% else %}
+
+	  <script src="{{base_url()}}/assets/dist/node_modules/video.js/dist/video.js"></script>
+	  <script src = "{{base_url()}}/assets/dist/node_modules/videojs-mobile-ui/dist/videojs-mobile-ui.min.js" ></script>
+
+      <script type="text/javascript">
+    	video = document.getElementsByName('media')[0];
+	    ls = {};
+
+	    if(typeof(localStorage.series) !== 'undefined'){
+
+	      ls = JSON.parse(localStorage.series);
+
+	      if (typeof(ls['{{cap.id}}']) !== 'undefined') {
+
+	          video.currentTime = ls['{{cap.id}}'].currentTime;
+
+	      }
+	      
+
+	    }
+	  	
+	  	video.onprogress = function(){
+
+	      ls['{{cap.id}}'] = {currentTime: this.currentTime};
+
+	  	  localStorage.series = JSON.stringify(ls);
+
+	  	};
+
+	  	video.onended = function(){
+
+	  	  ls['{{cap.id}}'] = {currentTime: 0};
+
+	  	  localStorage.series = JSON.stringify(ls);
+
+	  	  url = $('#play').parent().next().children().children().children()[2].href;
+	  	  
+	  	  document.location.href =  url;
+
+	  	};
+
+    	var player = videojs('my-video');
+
+	    //player.mobileUi();
+	    player.fluid(true);
+	    player.aspectRatio('16:8');
+	  </script>
+    {% endif %}
+  	
+
+{% endblock %}  

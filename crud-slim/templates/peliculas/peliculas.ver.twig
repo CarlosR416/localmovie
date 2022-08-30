@@ -1,0 +1,133 @@
+{% extends 'peliculas/Peliculas.twig' %}
+
+{% block styles %}
+
+  {% if reproducir is null %}
+
+    <link type="text/css" rel="stylesheet" href="{{base_url()}}/assets/dist/css/error_archivo_no_cargado/style.css" />
+
+  {% else %}
+
+    <link href="{{base_url()}}/assets/dist/node_modules/video.js/dist/video-js.css" rel="stylesheet" />
+
+    <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+    <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+
+  {% endif %}
+
+{% endblock %}
+
+
+{% block reproductor %}
+    <div style="color: #fff"> 
+
+    {% if reproducir is not null %}
+
+        <video
+          id="my-video"
+          class="video-js"
+          controls
+          preload="auto"
+          data-setup="{}"
+          name="media" 
+          data-id='{{cap.id}}'
+        >
+          <source src="{{base_url()}}/assets/g/peliculas/{{data.url}}" type="video/mp4" />
+          <source src="{{base_url()}}/assets/g/peliculas/{{data.url}}" type="video/webm" />
+          <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a
+            web browser that
+            <a href="https://videojs.com/html5-video-support/" target="_blank"
+              >supports HTML5 video</a
+            >
+          </p>
+        </video>
+        
+    {% else %}
+  
+      <div id="error_archivo_no_cargado" style="height: 500px;">
+        {% include 'error_archivo_no_cargado.twig' with {'titulo': 'PELICULAS'}%}
+      </div>
+
+    {% endif %}
+      <div style="background: #00000052; padding: 10px; border-radius: 5px; margin-top: 20px;">
+        <h1>{{ data.titulo }}</h1>
+        <p>{{data.descripcion}}</p>
+      </div> 
+    </div>
+{% endblock %}
+
+{% block Contenido %}
+
+{% endblock %}
+
+{% block script %}
+
+ 
+  {% if reproducir is null %}
+     <script>
+
+      error_archivo_no_cargado = document.getElementById('error_archivo_no_cargado');
+
+      $(window).resize(function () {
+
+        //container_my3 = document.getElementById('container_my3');
+       // ventana = $(container_my3).width();
+       // container_my3.style.minWidth = ventana+'px';
+
+        width = $(error_archivo_no_cargado).width();
+        height = (width/16)*8;
+
+        if (height < 270) {
+          $(error_archivo_no_cargado).height(270);
+        }else{
+          $(error_archivo_no_cargado).height(height);
+        }
+      });
+
+      $(window).resize();
+
+    </script>
+  {% else %}
+
+    <script src="{{base_url()}}/assets/dist/node_modules/video.js/dist/video.js"></script>
+    <script src="{{base_url()}}/assets/dist/node_modules/videojs-mobile-ui/dist/videojs-mobile-ui.min.js" ></script> 
+
+    <script>
+
+      video = document.getElementsByName('media')[0];
+      ls = {};
+
+      if(typeof(localStorage.pelicula) !== 'undefined'){
+
+        ls = JSON.parse(localStorage.pelicula);
+
+        if (typeof(ls['{{data.id}}']) !== 'undefined') {
+
+            video.currentTime = ls['{{data.id}}'].currentTime;
+
+        }
+        
+
+      }
+      
+      video.onprogress = function(){
+
+        ls['{{data.id}}'] = {currentTime: this.currentTime};
+
+        localStorage.pelicula = JSON.stringify(ls);
+
+      };
+
+      var player = videojs('my-video');
+
+      //player.mobileUi();
+      player.fluid(true);
+      player.aspectRatio('16:8');
+
+    </script>
+  {% endif %}
+  
+
+
+{% endblock %}

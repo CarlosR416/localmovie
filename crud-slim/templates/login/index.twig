@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Inicia Session</title>
+   <!--Made with love by Mutiullah Samim -->
+   
+ 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">  
+	<link href="{{base_url()}}/assets/dist/css/material/material-icons.css" rel="stylesheet">
+	<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+	<style type="text/css">
+
+	@font-face {
+
+      font-family: 'Material Icons'; 
+      font-style: normal;
+      font-weight: 400;
+      src: url({{base_url()}}/assets/dist/css/material/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+
+    }
+
+	</style>
+
+	<link rel="stylesheet" href="{{base_url()}}/assets/dist/plugins/pace/css/pace.min.css">
+
+
+
+	<!--Custom styles-->
+	<link rel="stylesheet" type="text/css" href="{{base_url()}}/assets/dist/css/login/styles.css">
+
+	<link href="{{base_url()}}/assets/dist/css/bootstrap/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+	
+	
+</head>
+<body style="background-image: url('{{base_url()}}/assets/imagenes/544750.jpg');">
+<div style="width: 100%; position: fixed;" id="mensaje">
+	
+</div>
+<div class="container">
+
+	<div class="d-flex justify-content-center h-100">
+
+		
+		<div class="card">
+			<div class="card-header">
+				<h3>Iniciar Session</h3>
+				<!--<div class="d-flex justify-content-end social_icon">
+					<span><i class="fab fa-facebook-square"></i></span>
+					<span><i class="fab fa-google-plus-square"></i></span>
+					<span><i class="fab fa-twitter-square"></i></span>
+				</div>-->
+			</div>
+			<div class="card-body">
+				<form method="post" class="ajax">
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="material-icons">account_box</i></span>
+						</div>
+						<input type="text" class="form-control" placeholder="Usuario" name="user">
+						
+					</div>
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="material-icons">lock</i></span>
+						</div>
+						<input type="password" class="form-control" placeholder="Contraseña" name="password">
+					</div>
+					<!--<div class="row align-items-center remember">
+						Recordar Session
+					</div>-->
+					<input type="checkbox" name="recorder" style="display: none;">
+					<div class="form-group">
+						<input type="submit" value="Ingresar" class="btn login_btn">
+					</div>
+				</form>
+
+				<div class="card-footer">
+					<div class="d-flex justify-content-center links" style="font-size: 25px; text-align: center; font-style: italic;">
+							Ingresa y disfruta de todo nuestro contenido
+					</div>
+				</div>
+			</div>
+			
+			<!--<div class="card-footer">
+				<div class="d-flex justify-content-center links">
+					¿No tienes cuenta?<a href="#">Registrate</a>
+				</div>
+				<div class="d-flex justify-content-center">
+					<a href="#">¿Olvidaste tu contraseña?</a>
+				</div>
+			</div>-->
+			
+		</div>
+	</div>
+</div>
+
+ <script src="{{base_url()}}/assets/dist/js/jquery/jquery-3.4.1.slim.min.js" ></script>
+ <script src="{{base_url()}}/assets/dist/js/bootstrap/bootstrap.min.js"></script>
+
+ <script src="{{base_url()}}/assets/dist/plugins/jquery/jquery.min.js" ></script>
+
+ <script src="{{base_url()}}/assets/dist/plugins/pace/js/pace.min.js"></script>
+
+
+<script>
+
+  $(document).ajaxStart(function () {
+    Pace.restart()
+  });
+
+  $('.ajax').submit(function (e) {
+
+  	e.preventDefault();
+
+  	
+    user = $(this['user']).val();
+    pass = $(this['password']).val();
+    recorder = this['recorder'].checked;
+    
+    
+    $.ajax({
+      url: '',
+      method: 'post',
+      data: {user: user, password: pass, recorder: recorder},
+      success: function (result) {
+        
+        e = JSON.parse(result);
+        
+
+        if (e.code === 500) {
+
+          template = '<div class="alert alert-danger alert-dismissible" style="width: 300px; margin: auto; margin-top: 10px; color: #fbfbf9; background-color: #e803039e; border-color: #f7eded;"> <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button> <span >'+e.error+'</span></div>';
+
+          $('#mensaje').html(template);
+          
+        }else{
+
+        	if (typeof(e.codeRecorder) !== 'undefined') {
+
+        		alert('te recordaran');
+
+        	}
+        	
+        	url = obtenerValorParametro('url');
+
+        	if (url === null) {
+        		document.location.href = document.location.origin+'{{path_for('peliculas')}}';
+        	}else{
+        		document.location.href = document.location.origin+url;
+        	}
+          	
+        }
+      }
+    })
+
+    return false;
+  });
+
+  function obtenerValorParametro(sParametroNombre) {
+	var sPaginaURL = window.location.search.substring(1);
+	 var sURLVariables = sPaginaURL.split('&');
+	  for (var i = 0; i < sURLVariables.length; i++) {
+	    var sParametro = sURLVariables[i].split('=');
+	    if (sParametro[0] == sParametroNombre) {
+	      return sParametro[1];
+	    }
+	  }
+	 return null;
+  }
+</script>
+</body>
+</html>

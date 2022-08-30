@@ -1,0 +1,84 @@
+{% extends 'peliculas/Peliculas.twig' %}
+
+{% block styles %}
+
+  <link href="{{base_url()}}/assets/dist/node_modules/video.js/dist/video-js.css" rel="stylesheet" />
+
+  <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+  <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+
+{% endblock %}
+
+
+{% block reproductor %}
+
+ 
+    <div>  
+      <video
+        id="my-video"
+        class="video-js"
+        controls
+        preload="auto"
+        poster="MY_VIDEO_POSTER.jpg"
+        data-setup="{}"
+        name="media" 
+        data-id='{{cap.id}}'
+      >
+        <source src="{{base_url()}}/assets/g/Peliculas/{{data.url}}" type="video/mp4" />
+        <source src="{{base_url()}}/assets/g/Peliculas/{{data.url}}" type="video/webm" />
+        <p class="vjs-no-js">
+          To view this video please enable JavaScript, and consider upgrading to a
+          web browser that
+          <a href="https://videojs.com/html5-video-support/" target="_blank"
+            >supports HTML5 video</a
+          >
+        </p>
+      </video>
+      <h1>{{ data.titulo }}</h1>
+    </div>
+  
+
+{% endblock %}
+
+{% block script %}
+
+  <script type="text/javascript">
+
+    video = document.getElementsByName('media')[0];
+    ls = {};
+
+    if(typeof(localStorage.pelicula) !== 'undefined'){
+
+      ls = JSON.parse(localStorage.pelicula);
+
+      if (typeof(ls['{{data.id}}']) !== 'undefined') {
+
+          video.currentTime = ls['{{data.id}}'].currentTime;
+
+      }
+      
+
+    }
+    
+    video.onprogress = function(){
+
+      ls['{{data.id}}'] = {currentTime: this.currentTime};
+
+      localStorage.pelicula = JSON.stringify(ls);
+
+    };
+
+  </script>
+
+   <script src="{{base_url()}}/assets/dist/node_modules/video.js/dist/video.js"></script>
+   <script src = "{{base_url()}}/assets/dist/node_modules/videojs-mobile-ui/dist/videojs-mobile-ui.min.js" ></script> 
+   <script>
+
+    var player = videojs('my-video');
+
+    //player.mobileUi();
+    player.fluid(true);
+    player.aspectRatio('16:8');
+    
+  </script>
+{% endblock %}

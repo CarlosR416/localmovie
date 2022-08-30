@@ -1,0 +1,75 @@
+{% extends 'index.twig' %}
+
+{% set Contenido = 'ACTIVE' %}
+
+
+{% block Contenido %}
+
+<form class="container border" action="{{path_for('pelicula.add')}}" method="post" enctype="multipart/form-data">
+  <h4>Añadir Pelicula</h4>
+
+  <div class="row ">
+  	<div class="col-md-5">
+  	  <div class="form-group">
+  	    <label for="exampleInputEmail1">Titulo de la Pelicula</label>
+  	    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="titulo">
+  	  </div>
+  	</div>
+    <div class="col-md-2">
+      <div class="form-group">
+        <label for="exampleInputEmail1">Duración</label>
+        <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="duracion">
+      </div>
+    </div>
+  	<div class="col-md-5">
+  	  <div class="form-group">
+  	    <label for="exampleFormControlFile1">Subir Imagen de Portada</label>
+  	    <input type="file" class="form-control-file" id="exampleFormControlFile1" name="imgfile">
+  	  </div>
+  	</div>
+  </div>
+  
+  
+  <div class="form-group">
+    <label for="exampleInputPassword1">Descripcion</label>
+    <textarea class="form-control" name="descripcion"></textarea>
+  </div>
+  
+  <button type="submit" class="btn btn-primary form-control">Añadir</button>
+</form>
+
+<form class="container border my-3">
+  <h4>Añadir Serie</h4>
+
+  <div class="row">
+  	<div class="col-md-5">
+  	  <div class="form-group">
+	    <label for="exampleInputEmail1">Titulo de la Serie</label>
+	    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="titulo">
+	  </div>
+  	</div>
+  	<div class="col-md-2">
+  	  <div class="form-group">
+	    <label for="ntemporada">Temporadas</label>
+	    <input type="number" class="form-control" id="ntemporada" aria-describedby="emailHelp" name="ntemp">
+	  </div>
+  	</div>
+  	<div class="col-md-5">
+  	  <div class="form-group">
+	    <label for="exampleFormControlFile1">Subir Imagen de Portada</label>
+	    <input type="file" class="form-control-file" id="exampleFormControlFile1">
+	  </div>
+  	</div>
+  	
+  </div>
+  
+  
+  <div class="form-group">
+    <label for="exampleInputPassword1">Descripcion</label>
+    <textarea class="form-control"></textarea>
+  </div>
+  
+  <button type="submit" class="btn btn-primary form-control">Añadir</button>
+</form>
+
+{% endblock %}

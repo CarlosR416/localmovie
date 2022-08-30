@@ -1,0 +1,50 @@
+
+	.sombra:hover{
+		background: #ababab33;
+		cursor: pointer;
+	}
+
+	.play{
+		background: #d8d8d8;
+	}
+
+	.play .card-body{
+		padding: 0.3rem;
+	}
+
+	.sombra{
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+	}
+
+	.myicon{
+		width: 100%;
+	    color: #d8d8d8;
+	    font-size: 75px;
+	    display: none;
+	    justify-content: center;
+	    align-items: center;
+	    height: 100%;
+	}
+
+	.card:hover .myicon{
+	    display: flex;
+	}
+
+	.card:active .myicon{
+	    font-size: 60px;
+	}
+
+	.img-container{
+		position: relative;
+	}
+
+	.icon-container{
+		height: 100%;
+		width: 100%;
+		position: absolute;
+		top: 0;
+	}
+

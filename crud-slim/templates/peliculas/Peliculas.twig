@@ -1,0 +1,277 @@
+{% extends 'index.twig' %}
+
+{% set Peliculas = 'ACTIVE' %}
+{% set Active = 'Peliculas' %}
+
+{% block styles %}
+
+	<link rel="stylesheet" type="text/css" href="{{base_url()}}/assets/dist/css/styles/ficha.css">
+
+{% endblock %}
+
+{% block Contenido %}
+
+			{% if Session  is not empty and Session.admin == 1 %}
+			  <div class="col-lg-3 col-md-4 mb-3">
+                <div class="card h-100 play">
+                  <div class="img-container">
+                  	<div style="min-height: 320px; background: #fff"></div>
+                  	<div class="icon-container">
+                  		<span class="material-icons myicon">add</span>
+                  	</div>
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title">
+                      <a href="#">Añadir Nueva Pelicula</a>
+                    </h5>
+                    <h6>Duración: 0 Min</h6>
+                    <p class="card-text">Descripcion</p>
+                  </div>
+                  <a href="#" data-toggle="modal" data-target="#modal-p-add">
+                  	<div class="sombra" data-id="#" >
+                  		
+                    </div>
+      			      </a>
+                </div>
+              </div>
+			{% endif %}
+
+			{% include 'peliculas/ficha.twig' %}
+            
+            <div class="modal" id="modal-p-add">
+	          <div class="modal-dialog">
+	            <div class="modal-content">
+	              <div class="modal-header">
+	              	<h4>Agregar Pelicula</h4>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                  <span aria-hidden="true">×</span></button>
+	                
+	              </div>
+	              <div class="modal-body">
+	                <form class="container"  id="form_add" action="{{path_for('pelicula.add')}}" method="post" enctype="multipart/form-data">
+
+					  
+				  	  <div class="form-group">
+				  	    <label for="exampleInputEmail1">Titulo de la Pelicula</label>
+				  	    <input list="titulo" type="text" class="form-control"  aria-describedby="emailHelp" name="titulo">
+				  	    <p id="info" style="color: #F44336; font-size: 14px; padding: 3px 9px;"></p>
+				  	  </div>
+				  	  <datalist id="titulo">
+					  </datalist>
+				  
+				      <div class="form-group">
+				        <label for="exampleInputEmail1">Duración</label>
+				        <input type="number" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="duracion">
+				      </div>
+
+				      <input type="hidden" name="url_img">
+				      <center><img src="" name="imagen" width="50%"></center>
+				  	  <div class="form-group">
+				  	    <label for="exampleFormControlFile1">Subir Imagen de Portada</label>
+				  	    <input type="file" class="form-control-file" id="exampleFormControlFile1" name="imgfile">
+				  	  </div>
+					  	
+					 
+					  <div class="form-group">
+					    <label for="exampleInputPassword1">Descripcion</label>
+					    <textarea class="form-control" name="descripcion" style="height: 150px;"></textarea>
+					  </div>
+					  
+					  <button type="submit" class="btn btn-primary form-control">Añadir</button>
+					</form>
+	              </div>
+	              
+	            </div>
+	            <!-- /.modal-content -->
+	          </div>
+	          <!-- /.modal-dialog -->
+	        </div>
+
+	        {% include 'modal_delete.twig' %}
+
+{% endblock %}
+
+{% block script %}
+
+	<script src="{{base_url()}}/assets/dist/plugins/jquery.ajax.form/jq.ajax.form.js"></script>
+	<script type="text/javascript">
+
+		$('#form_add').ajaxform({
+
+			datatype : 'html', 
+
+			complete : function(html){
+
+				child = $('#contenido').children()[0];
+
+				$(child).after(html);
+	            console.log(html);
+
+	        },
+	        fail : function(){
+	        	alert('Problema de Conexion');
+	        },
+	        validate :false
+
+        });
+
+
+		$('.btn_p_edit').on('click', function(e) {
+			e.preventDefault();
+			
+			_this = $(this).parents('div.col-lg-3');
+
+			id = this.parentElement.dataset.id;
+
+			$.ajax({
+				url: '{{path_for("pelicula.edit", {"id": ""})}}'+id,
+				method: 'post',
+
+				success: function(respuesta){
+
+					data = JSON.parse(respuesta);
+
+					document.getElementsByName('titulo')[0].value = data.titulo;
+					document.getElementsByName('descripcion')[0].value = data.descripcion;
+					document.getElementsByName('duracion')[0].value = data.duracion;
+					document.getElementsByName('imagen')[0].src = '{{base_url()}}/assets/imagenes/'+data.img;
+
+					modal = $('#modal-p-add');
+					modal.find('h4')[0].innerText = "Editar Pelicula";
+					modal.find('form')[0].action = '{{path_for("pelicula.edit", {"id": ""})}}'+data.id;
+					modal.find('button.btn.btn-primary.form-control').text('Modificar');
+
+					modal.modal();
+					console.log(data);
+				}
+			});
+
+		});
+
+		$('.btn_p_delete').on('click', function(e) {
+			e.preventDefault();
+			
+			_this = $(this).parents('div.col-lg-3');
+
+			id = this.parentElement.dataset.id;
+			name = this.parentElement.dataset.name;
+			html = '¿Esta seguro que desea eliminar la pelicula: <b>'+name+'</b>?';
+
+			$('#modal-text-name').data('id', id);
+			$('#modal-text-name').html(html);
+			$('#modal-delete').modal();
+
+		});
+
+		$('#btn_si_delete').on('click', function(e) {
+			e.preventDefault();
+
+			id = $('#modal-text-name').data('id');
+
+			$.ajax({
+				url: '{{path_for("pelicula.del", {"id": ""})}}'+id,
+
+				success: function(){
+
+					$('#modal-delete').modal('hide');
+					_this.remove();
+
+				}
+			});
+
+		});
+
+		test = '';
+		$(document.getElementsByName('titulo')[0]).on('keyup', function(){
+
+			var url = this.value;
+			test = this.value;
+
+			setTimeout(function(){
+				
+				if (url != '' && test == url) {
+				$.ajax({
+					
+					url: "{{path_for('api.pelicula.search',{'search': ""})}}"+url,
+		
+					success: function(respuesta) {
+
+						if (respuesta != 'null') {
+
+							var data = JSON.parse(respuesta);
+							datalist = ''; 
+							sugeren = [];
+							for (var i = 0; i < data.length; i++) {
+								
+								datalist += '<option data-titulo="'+data[i].id+'" value="'+data[i].title+'"></option>';
+								sugeren[i] = data[i].title;
+							}
+							$('#titulo').html(datalist);
+
+							$('#info').html('Quizo decir: <a href="#" onclick="title_change(this)">'+sugeren[0]+'</a>');
+						
+						}else{
+
+							$('#info').html('sin resultados de la api');
+						}
+						
+						//
+						
+					},
+					error: function() {
+						$('#info').html('sin conexion');
+				        console.log("No se ha podido obtener la información");
+				    },
+				    timeout: 10000
+						
+					});		
+				}
+
+			}, 500);
+			
+				
+		});
+
+		$(document.getElementsByName('titulo')[0]).on('change', function () {
+		   var val=$(this).val();
+		   var id = $('#titulo').find('option[value="'+val+'"]').data('titulo');
+
+		   if (typeof(id) != 'undefined') {
+		   		
+		   		$.ajax({
+					
+					url: "{{path_for('api.pelicula.id',{'id': ""})}}"+id,
+		
+					success: function(respuesta) {
+
+						data = JSON.parse(respuesta);
+						console.log(data);
+
+						document.getElementsByName('descripcion')[0].value = data.overview;
+						document.getElementsByName('duracion')[0].value = data.runtime;
+						document.getElementsByName('imagen')[0].src = data.base_url_image+'w500'+data.poster_path;
+						document.getElementsByName('url_img')[0].value = data.base_url_image+'w500'+data.poster_path;
+					},
+					error: function() {
+				        console.log("No se ha podido obtener la información");
+				    }
+						
+					});		
+				
+		   	
+		   }		   
+		});
+
+		function title_change($this){
+
+			var input = document.getElementsByName('titulo')[0];
+
+			input.value = $this.text;
+			$(input).change();
+
+		}
+
+
+
+	</script>
+{% endblock %}

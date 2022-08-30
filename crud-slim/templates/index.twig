@@ -1,0 +1,406 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <title>Local Movie</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Latest compiled and minified CSS -->
+
+  <link rel="stylesheet" href="{{base_url()}}/assets/dist/css/bootstrap/bootstrap.min.css" >
+
+   <!-- corregir iconos de material local -->
+  <link href="{{base_url()}}/assets/dist/css/material/material-icons.css" rel="stylesheet">
+
+  <link rel="stylesheet" type="text/css" href="{{base_url()}}/assets/dist/css/simple-sidebar.css">
+
+  <style type="text/css">
+
+
+    @font-face {
+      font-family: 'Material Icons';
+      font-style: normal;
+      font-weight: 400;
+      src: url({{base_url()}}/assets/dist/css/material/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+    }
+    .btn_menu{
+        background: 0;
+        border: 0px;
+        color: #fff;
+        padding: 0.5rem;
+    }
+    .btn_menu:focus{
+        outline: none;
+    }
+
+    .list-group .ACTIVE{
+        font-weight: 700;
+    }
+
+    main > .container{
+      padding-top: 60px; 
+    }
+
+    .list-group-item > a{
+      text-decoration: none;
+      color: #676767;
+    }
+
+    .list-group-item > a:hover{
+      color: #111;
+      
+    }
+
+    .fondo{
+      background: rgba(66,66,66,1);
+    background: -moz-linear-gradient(45deg, rgba(66,66,66,1) 0%, rgba(66,66,66,1) 33%, rgba(54,54,54,1) 48%, rgba(48,48,48,1) 62%, rgba(0,0,0,1) 100%);
+    background: -webkit-gradient(left bottom, right top, color-stop(0%, rgba(66,66,66,1)), color-stop(33%, rgba(66,66,66,1)), color-stop(48%, rgba(54,54,54,1)), color-stop(62%, rgba(48,48,48,1)), color-stop(100%, rgba(0,0,0,1)));
+    background: -webkit-linear-gradient(45deg, rgba(66,66,66,1) 0%, rgba(66,66,66,1) 33%, rgba(54,54,54,1) 48%, rgba(48,48,48,1) 62%, rgba(0,0,0,1) 100%);
+    background: -o-linear-gradient(45deg, rgba(66,66,66,1) 0%, rgba(66,66,66,1) 33%, rgba(54,54,54,1) 48%, rgba(48,48,48,1) 62%, rgba(0,0,0,1) 100%);
+    background: -ms-linear-gradient(45deg, rgba(66,66,66,1) 0%, rgba(66,66,66,1) 33%, rgba(54,54,54,1) 48%, rgba(48,48,48,1) 62%, rgba(0,0,0,1) 100%);
+    background: linear-gradient(45deg, rgba(66,66,66,1) 0%, rgba(66,66,66,1) 33%, rgba(54,54,54,1) 48%, rgba(48,48,48,1) 62%, rgba(0,0,0,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#424242', endColorstr='#000000', GradientType=1 );
+    background-attachment: fixed;
+    }
+
+  </style>
+
+  {% block styles %}{% endblock %}
+
+</head>
+<body class="fondo">
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" style="background-image: url('{{base_url()}}/assets/imagenes/544750.jpg');">
+
+        <div class="" style="">
+            <button class="btn_menu" id="menu-toggle">
+                <span class="material-icons align-middle">reorder</span>
+            </button>
+            <a class="navbar-brand h1" href="#" style="">Local Movie</a>
+            <div class="dropdown" style="display: inline-block">
+              <a class="nav-link dropdown-toggle" style="text-decoration: none; color: #fff;" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{Active}}
+            </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="{{path_for('peliculas')}}">Peliculas</a>
+                  <a class="dropdown-item" href="{{path_for('series')}}">Series</a>
+              </div>
+            </div>
+            
+        </div>
+
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+             
+            </li>
+          </ul>
+          <div class="navbar-custom-menu">
+              <ul class="nav navbar-nav">
+                <li>
+                  <form action="{{path_for(Active|lower)}}" method="get" class="form-inline my-2 my-lg-0">
+                  <div class="input-group ">
+                    <input type="text" class="form-control" placeholder="Buscar" name="f" required="Por favor ingrese termino de busqueda">
+                    <span class="input-group-append">
+                      <button type="submit" class="btn btn-outline-secondary btn-flat"><span class="material-icons align-middle" style="font-size: 1.2rem;">search</span></button>
+                    </span>
+                  </div>
+                  </form>
+                </li>
+                {% if Session  is empty %} 
+                  <li>
+                    <a href="{{path_for('login')}}" class="btn btn-outline-secondary ml-sm-2" style="color: #fff">Iniciar Session</a>
+                  </li>
+                {% else %}
+                  <li>
+                    <a href="{{path_for('logout')}}" class="btn btn-outline-secondary ml-sm-2" style="color: #fff">Cerrar Session</a>
+                  </li>
+                {% endif %}
+              </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="d-flex toggled" id="wrapper">
+
+        <div class="bg-light border-right" id="sidebar-wrapper" style="padding-top: 60px">
+          <div class="list-group list-group-flush">
+          <a href="{{path_for(Active|lower)}}" class="list-group-item list-group-item-action bg-light ACTIVE">
+            <div >
+               Todas
+               <span class="ACTIVE float-right">{{totalp}}</span>
+            </div>
+          </a>
+          {% for ct in categorias %}
+          	<a href="{{path_for(Active|lower)}}?c={{ct.id}}" class="list-group-item list-group-item-action bg-light">
+            <div >
+               {{ct.nombre}}
+               <span class="float-right">{% if Active|lower == 'series' %}{{ct.total_s.count}}{% else %}{{ct.total_p.count}}{% endif %}</span>
+            </div>
+          </a>
+          {% endfor %}
+
+            
+            
+            
+            {#  
+            <div class="list-group-item list-group-item-action bg-light {{Series}}">
+               <a href="{{path_for('series')}}" >Series</a>
+               {% if Series == 'ACTIVE' and Session  is not empty and Session.admin == 1%}
+                <a href="" class="float-right"><span class="material-icons ACTIVE">add</span></a>
+               {% endif %}
+            </div>
+            
+           
+
+             {% if Session  is not empty %} 
+
+            <div class="list-group-item list-group-item-action bg-light">
+              <a href="{{path_for('logout')}}" >Cerrar Session</a>
+            </div>
+              
+            {% endif %} #}
+            <!--<a href="{{path_for('videos')}}" class="list-group-item list-group-item-action bg-light {% block Videos %} {% endblock %}">Videos</a>-->
+            
+          </div>
+        </div>
+        <div class="d-flex flex-column" style="width: 100%; margin: auto; min-width: 100%;">
+          <main role="main" class="main">
+             
+              <div class="container my-3" id="container_my3">
+                {% block reproductor %}
+
+                {% endblock %}
+                <div>
+                  <div class="row" id="contenido">
+
+                      {% block Contenido %}
+
+                        <div class="col-lg-3 col-md-4 mb-3">
+                          <div class="card h-100">
+                            <a href="{{path_for('pelicula.ver')}}ju.MP4"><img class="card-img-top" src="{{base_url()}}/assets/imagenes/page-1_img02.jpg" alt=""></a>
+                            <div class="card-body">
+                              <h4 class="card-title">
+                                <a href="#">Item One</a>
+                              </h4>
+                              <h5>$24.99</h5>
+                              <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur!</p>
+                            </div>
+                            <div class="card-footer">
+                              <small class="text-muted">★ ★ ★ ★ ☆</small>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 mb-3">
+                          <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="{{base_url()}}/assets/imagenes/page-1_img01.jpg" alt=""></a>
+                            <div class="card-body">
+                              <h4 class="card-title">
+                                <a href="#">Item Two</a>
+                              </h4>
+                              <h5>$24.99</h5>
+                              <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur! Lorem ipsum dolor sit amet.</p>
+                            </div>
+                            <div class="card-footer">
+                              <small class="text-muted">★ ★ ★ ★ ☆</small>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 mb-3">
+                          <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="{{base_url()}}/assets/imagenes/page-1_img03.jpg" alt=""></a>
+                            <div class="card-body">
+                              <h4 class="card-title">
+                                <a href="#">Item Three</a>
+                              </h4>
+                              <h5>$24.99</h5>
+                              <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur!</p>
+                            </div>
+                            <div class="card-footer">
+                              <small class="text-muted">★ ★ ★ ★ ☆</small>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 mb-3">
+                          <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="{{base_url()}}/assets/imagenes/page-1_img04.jpg" alt=""></a>
+                            <div class="card-body">
+                              <h4 class="card-title">
+                                <a href="#">Item Four</a>
+                              </h4>
+                              <h5>$24.99</h5>
+                              <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur!</p>
+                            </div>
+                            <div class="card-footer">
+                              <small class="text-muted">★ ★ ★ ★ ☆</small>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 mb-3">
+                          <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="{{base_url()}}/assets/imagenes/page-1_img11.jpg" alt=""></a>
+                            <div class="card-body">
+                              <h4 class="card-title">
+                                <a href="#">Item Five</a>
+                              </h4>
+                              <h5>$24.99</h5>
+                              <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur! Lorem ipsum dolor sit amet.</p>
+                            </div>
+                            <div class="card-footer">
+                              <small class="text-muted">★ ★ ★ ★ ☆</small>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-4 mb-3">
+                          <div class="card h-100">
+                            <a href="#"><img class="card-img-top" src="{{base_url()}}/assets/imagenes/page-1_img12.jpg" alt=""></a>
+                            <div class="card-body">
+                              <h4 class="card-title">
+                                <a href="#">Item Six</a>
+                              </h4>
+                              <h5>$24.99</h5>
+                              <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur!</p>
+                            </div>
+                            <div class="card-footer">
+                              <small class="text-muted">★ ★ ★ ★ ☆</small>
+                            </div>
+                          </div>
+                        </div>
+                      {% endblock %}
+                  
+                  </div>
+                 </div> 
+
+                 
+                  {% if pagination.total > 0 %}
+
+                    <div style="width: fit-content; margin: 0 auto;">
+                      <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                          <li class="page-item {% if (pagination.total < 2) or (pagination.active < 2)  %}disabled{% endif %}"><a class="page-link" href="?p={{ pagination.active - 1}}{{pagination.param}}">Anterior</a></li>
+
+                          {% for i in 1..pagination.total  %}
+                            <li class="page-item {% if i == pagination.active %}active{% endif %}"><a class="page-link" href="?p={{i}}{{pagination.param}}">{{i}}</a></li>
+                          {% endfor  %}
+                  
+                          <li class="page-item {% if (pagination.total < 2) or (pagination.active == pagination.total)  %}disabled{% endif %}"><a class="page-link" href="?p={{ pagination.active + 1}}{{pagination.param}}">Siguiente</a></li>
+                        </ul>
+                      </nav>
+                    </div>
+
+                  {% endif %}
+                  
+              </div>
+              <!--<div class="scrolling-wrapper">
+                  <div class="row scrolling-wrapper-flexbox" >
+                      <div class="car col-sm-8 col-md-2 col-xs-10">
+                        <div class="card shadow-sm" style="width: 100%"> 
+                          <img src="{{base_url()}}/assets/imagenes/page-1_img01.jpg" class="bd-placeholder-img card-img-top" width="100%">
+                          
+                        </div>
+                      </div>
+
+                      <div class="car col-sm-8 col-md-2 col-xs-10">
+                        <div class="card shadow-sm" style="width: 100%"> 
+                          <img src="{{base_url()}}/assets/imagenes/page-1_img02.jpg" class="bd-placeholder-img card-img-top" width="100%">
+                          
+                        </div>
+                      </div>
+
+                      <div class="car col-sm-8 col-md-2 col-xs-10">
+                         <div class="card shadow-sm" style="width: 100%"> 
+                          <img src="{{base_url()}}/assets/imagenes/page-1_img04.jpg" class="bd-placeholder-img card-img-top" width="100%">
+                          
+                        </div>
+                      </div>
+
+                      <div class="car col-sm-8 col-md-2 col-xs-10">
+                        <div class="card shadow-sm" style="width: 100%"> 
+                          <img src="{{base_url()}}/assets/imagenes/page-1_img15.jpg" class="bd-placeholder-img card-img-top" width="100%">
+                          
+                        </div>
+                      </div>
+
+                      <div class="car col-sm-8 col-md-2 col-xs-10">
+                        <div class="card shadow-sm" style="width: 100%"> 
+                          <img src="{{base_url()}}/assets/imagenes/page-1_img10.jpg" class="bd-placeholder-img card-img-top" width="100%">
+                          
+                        </div>
+                      </div>
+
+                      <div class="car col-sm-8 col-md-2 col-xs-10">
+                        <div class="card shadow-sm" style="width: 100%"> 
+                          <img src="{{base_url()}}/assets/imagenes/page-1_img11.jpg" class="bd-placeholder-img card-img-top" width="100%">
+                          
+                        </div>
+                      </div>
+
+                      <div class="car col-sm-8 col-md-2 col-xs-10">
+                        <div class="card shadow-sm" style="width: 100%"> 
+                          <img src="{{base_url()}}/assets/imagenes/page-1_img12.jpg" class="bd-placeholder-img card-img-top" width="100%">
+                          
+                        </div>
+                      </div>
+
+                      <div class="car col-sm-8 col-md-2 col-xs-10">
+                        <div class="card shadow-sm" style="width: 100%"> 
+                          <img src="{{base_url()}}/assets/imagenes/page-1_img13.jpg" class="bd-placeholder-img card-img-top" width="100%">
+                          
+                        </div>
+                      </div>
+
+                      <div class="car col-sm-8 col-md-2 col-xs-10">
+                        <div class="card shadow-sm" style="width: 100%"> 
+                          <img src="{{base_url()}}/assets/imagenes/page-1_img14.jpg" class="bd-placeholder-img card-img-top" width="100%">
+                          
+                        </div>
+                      </div>
+
+                      <div class="car col-sm-8 col-md-2 col-xs-10">
+                        <div class="card shadow-sm" style="width: 100%"> 
+                          <img src="{{base_url()}}/assets/imagenes/page-1_img15.jpg" class="bd-placeholder-img card-img-top" width="100%">
+                          
+                        </div>
+                      </div>
+                  </div>
+              </div>-->
+          </main>
+
+          <footer class="footer mt-auto py-3" style="color: #fff;">
+            <div class="container">
+              <p class="float-right"><a href="#">Subir</a></p>
+              <p>© 2020-2021 CineLocal, Inc.<!-- · <a href="#">Privacy</a> · <a href="#">Terms</a>--></p>
+            </div>
+          </footer>
+        </div>
+    </div>
+        
+    <script src="{{base_url()}}/assets/dist/plugins/jquery/jquery.js" ></script>
+
+    <!--<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>-->
+
+    <script src="{{base_url()}}/assets/dist/js/bootstrap/bootstrap.min.js"></script>
+
+    <script src="{{base_url()}}/assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    
+    {% block script %}{% endblock %}
+    <script>
+        $("#menu-toggle").click(function(e) {
+          e.preventDefault();
+          $("#wrapper").toggleClass("toggled");
+        });
+      </script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>-->
+</body>
+
+</html>
